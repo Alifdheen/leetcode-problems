@@ -1,0 +1,43 @@
+class Solution {
+    public boolean isNumber(String s) {
+        // Strip leading and trailing whitespace if required by older LeetCode test cases
+        s = s.trim();
+        
+        boolean seenDigit = false;
+        boolean seenDot = false;
+        boolean seenExponent = false;
+        
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            
+            if (Character.isDigit(ch)) {
+                seenDigit = true;
+            } else if (ch == '+' || ch == '-') {
+                // Signs can only appear at the start or immediately after an exponent 'e/E'
+                if (i > 0 && s.charAt(i - 1) != 'e' && s.charAt(i - 1) != 'E') {
+                    return false;
+                }
+            } else if (ch == '.') {
+                // A dot is invalid if we have already seen another dot or an exponent
+                if (seenDot || seenExponent) {
+                    return false;
+                }
+                seenDot = true;
+            } else if (ch == 'e' || ch == 'E') {
+                // An exponent is invalid if we already saw one, or if no digits appeared before it
+                if (seenExponent || !seenDigit) {
+                    return false;
+                }
+                seenExponent = true;
+                // Reset seenDigit because an exponent must be followed by a new set of integer digits
+                seenDigit = false;
+            } else {
+                // Any other character (like 'a', 'b', spaces inside, etc.) is invalid
+                return false;
+            }
+        }
+        
+        // The string is valid only if it ends with at least one valid digit character
+        return seenDigit;
+    }
+}
